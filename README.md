@@ -100,7 +100,7 @@ When the setup is complete, `cd` into the project folder and run:
 
 This will compile the project source files in a web bundle, create a light web server, listening by default on port 4200, and start listening for changes on the source files, in order to refresh the browser whenever you hit save in your IDE.
 
-> We said `compile`. Angular, since version 2, has starting using [Typescript](https://www.typescriptlang.org/) instead of plain Javascript. While having the advantage that it is type safe, Typescript cannot be run directly in the browser. It needs to be compiled into a Javascript flavor (currently ECMA 5). 
+> We said `compile`. Angular, since version 2, has started using [Typescript](https://www.typescriptlang.org/) instead of plain Javascript. While having the advantage that it is type safe, Typescript cannot be run directly in the browser. It needs to be compiled into a Javascript flavor (currently ECMA 5). 
 
 In your browser, hit `http://localhost:4200` to see your project start.
 
@@ -158,11 +158,27 @@ This is the icon that will appear in your web browser tab where the application 
 
 ### src/app/app.module.ts
 
-Angular is an IoC container, which means it is able to perform dependency injection, among other things. To do that, it needs a context, from which to inject objects. That context is this `module.ts` file. Any item that is not present directly or indirectly in `module.ts` cannot be injected.
+Angular is an IoC container, which means it is able to perform dependency injection, among other things. To do that, it needs a context, from which to inject objects. That context is this `app.module.ts` file. Any item that is not present directly or indirectly in `app.module.ts` cannot be injected.
+
+We _do_ have, at this point, a module that is not present in `app.module.ts` -- NgBootstrap. So, even though we did mention it in our `package.json`, it can still not be used. As per their setup specifications, we need to add the following to our `imports` section in `app.module.ts` to make it work:
+
+```
+NgbModule.forRoot()
+```
+
+We need to import the class also (by now, your IDE probably already complained about this):
+
+```
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+```
+
+> Each external library that you import in your Angular project should specify how it needs to be included in the `app.module.ts` file.
+
+> In general, imports in Angular `.ts` files will look for the paths relative to the file itself _OR_ the `node_modules` folder.
 
 ### src/app/app.component.*
 
-This is an Angular component.
+This is an Angular component that you see loaded in your browser.
 
 Notice the following things about it:
 
@@ -180,7 +196,7 @@ This folder is the Angular equivalent of a properties file, like `application.ym
 
 There are multiple such files, that will be used when `ng build` will be invoked with a switch, such as `--prod`.
 
-> In a production environment, there is no need to deploy `.ts` files. We deploy only `.js` files needed by the browser to run the application. More to the point, we will deploy a single `.js` file, which is a packaged, compressed (or _minified_) version of our compiled code, enhanced for best size and performance.
+> In a production environment, there is no need to deploy `.ts` files, since browsers don't know typescript. We deploy only `.js` files, which are needed by the browser to run the application. More to the point, we will deploy a single `.js` file, which is a packaged, compressed (or _minified_) version of our compiled code, enhanced for best size and performance.
 
 To use the environment variables in any typescript class, you need to import the environment like this:
 
@@ -188,3 +204,89 @@ To use the environment variables in any typescript class, you need to import the
 import { environment } from './relative/path/to/environments/environment';
 ```
 
+## Working with components
+
+So, the Angular CLI made one component for us. Our application will surely need more. Let's agree on a (pseudo) visual structure:
+
+```
+<navbar>
+    <logo />
+    <menu>
+        <menu-item />
+        <menu-item />
+        ...
+    </menu>
+    <login>...</login>
+</navbar>
+<content>
+...
+</content>
+```
+
+By Angular's logic, we need:
+
+- a _menu_ component containing a (possibly dynamic) array of items
+- a _login_ component which begins as an inline form with username, password and a 'Login' button; after a succesful login, it turns into a 'Logout' button. If the login fails, it should display some indication of the error.
+
+The navbar and the logo are just static visual elements, they can stay in `app.component`.
+
+Change the `app.component.html` file to this code:
+
+```
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="/">Angular Training</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+    [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation" (click)="isCollapsed = !isCollapsed">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
+    <ul class="navbar-nav mr-auto"></ul>
+    <app-login class="navbar-nav navbar-right"></app-login>
+  </div>
+</nav>
+<div class="container-fluid">
+
+</div>
+```
+
+The content is represented by the components which are going to be loaded based on navigation, so it's not a _single_ component, it's _any_ component.
+
+Let's start with the _login_ component.
+
+First, let's create a new folder, inside `/src/app`, called `components` and `cd` into it.
+
+To create a new component using Angular CLI, you can run:
+
+`ng generate component login`
+
+or, shorter:
+
+`ng g c login`
+
+This will create a new folder with the name `login`, put there the `.ts` and `.html` file, along with the unit test file, and add the component to the `app.module.ts`, to make it useable.
+
+For now, let's just make the `.html` file look good; we'll link the loose ends later.
+
+```
+<form class="form-inline" role="form" novalidate>
+  <div class="input-group mr-2">
+    <div class="input-group-prepend">
+      <i class="input-group-text fa fa-user"></i>
+    </div>
+    <input id="username" type="text" class="form-control form-control-sm" name="username" required>
+  </div>
+  <div class="input-group mr-2">
+    <div class="input-group-prepend">
+      <i class="input-group-text fa fa-lock"></i>
+    </div>
+    <input id="password" type="password" class="form-control form-control-sm" name="password" value="" required>
+  </div>
+  <button type="submit" class="btn btn-light btn-sm">Login</button>
+</form>
+```
+
+## Routing
+
+## Services
+
+## Observables
