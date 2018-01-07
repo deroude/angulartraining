@@ -12,6 +12,7 @@
 /.idea
 .project
 .classpath
+package-lock.json
 .c9/
 *.launch
 .settings/
