@@ -100,7 +100,7 @@ When the setup is complete, `cd` into the project folder and run:
 
 This will compile the project source files in a web bundle, create a light web server, listening by default on port 4200, and start listening for changes on the source files, in order to refresh the browser whenever you hit save in your IDE.
 
-We said `compile`. Angular, since version 2, has starting using [Typescript](https://www.typescriptlang.org/) instead of plain Javascript. While having the advantage that it is type safe, Typescript cannot be run directly in the browser. It needs to be compiled into a Javascript flavor (currently ECMA 5). 
+> We said `compile`. Angular, since version 2, has starting using [Typescript](https://www.typescriptlang.org/) instead of plain Javascript. While having the advantage that it is type safe, Typescript cannot be run directly in the browser. It needs to be compiled into a Javascript flavor (currently ECMA 5). 
 
 In your browser, hit `http://localhost:4200` to see your project start.
 
@@ -141,7 +141,7 @@ ng serve
 
 Angular applications are "one page apps". That's the _one_ page.
 
-Except for the title, you should not need to change anything here. If you feel the urge to change anything, there's probably a better way.
+> Except for the title, you should not need to change anything here. If you feel the urge to change anything, there's probably a better way.
 
 ### src/styles.scss
 
@@ -152,8 +152,39 @@ This is the main style file of the project. You should put here styles that appl
 @import "~font-awesome/css/font-awesome.css";
 ```
 
-### src/app/module.ts
+### src/favicon.ico
+
+This is the icon that will appear in your web browser tab where the application is loaded. While traditionally it was a 16x16 px ico file, modern browsers support png icons and animations, though that option is less standardized. Feel free to play around with web icon editors such as [this](http://www.favicon.cc/).
+
+### src/app/app.module.ts
 
 Angular is an IoC container, which means it is able to perform dependency injection, among other things. To do that, it needs a context, from which to inject objects. That context is this `module.ts` file. Any item that is not present directly or indirectly in `module.ts` cannot be injected.
 
-### 
+### src/app/app.component.*
+
+This is an Angular component.
+
+Notice the following things about it:
+
+- It is declared in the `declarations` section of `app.module.ts`.
+- It has a `@Component` [annotation](https://angular.io/api/core/Component) above the class, with the following items:
+    - `selector` - this is an html selector used to inject this component in other templates. This is an element selector, so this component can be injected using `<app-root></app-root>`. In fact, it is injected just so in `index.html`. Other types of selectors are:
+        - attribute: `[my-component]`, which would allow you to inject it as `<div my-component></div>`
+        - class: `.my-component`, which would allow you to inject it as `<div class='my-component'></div>`
+    - `templateUrl` - this is an html file representing the visual part of the component. You can consider the component as consisting of a controller (the `.ts` file) and a view (the `.html` file and, optionally, the `.scss` files)
+    - `styleUrls` - this is an array of `.css` or `.scss` files that should be loaded with this component. Be advised that these style sheets will be loaded _only_ with this component and will be removed as it is no longer loaded by the renderer.
+
+### src/environments/
+
+This folder is the Angular equivalent of a properties file, like `application.yml` in Spring.
+
+There are multiple such files, that will be used when `ng build` will be invoked with a switch, such as `--prod`.
+
+> In a production environment, there is no need to deploy `.ts` files. We deploy only `.js` files needed by the browser to run the application. More to the point, we will deploy a single `.js` file, which is a packaged, compressed (or _minified_) version of our compiled code, enhanced for best size and performance.
+
+To use the environment variables in any typescript class, you need to import the environment like this:
+
+```
+import { environment } from './relative/path/to/environments/environment';
+```
+
