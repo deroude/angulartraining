@@ -126,6 +126,8 @@ This will fetch the following libraries (you should usually keep these links ope
 - [NgBootstrap](https://ng-bootstrap.github.io/#/getting-started)
 - [FontAwesome](http://fontawesome.io/icons/)
 
+> We need the vanilla _Bootstrap 4_ library which contains the `.scss` style sheets. We also need _NgBootstrap_, which is an Angular native rewrite of the Bootstrap javascript component logic.
+
 Let's also update the versions (for a normal project, you should do this with care):
 
 `ncu -u`
@@ -232,7 +234,7 @@ The navbar and the logo are just static visual elements, they can stay in `app.c
 
 Change the `app.component.html` file to this code:
 
-```
+```html
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <a class="navbar-brand" href="/">Angular Training</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -267,7 +269,7 @@ This will create a new folder with the name `login`, put there the `.ts` and `.h
 
 For now, let's just make the `.html` file look good; we'll link the loose ends later.
 
-```
+```html
 <form class="form-inline" role="form" novalidate>
   <div class="input-group mr-2">
     <div class="input-group-prepend">
