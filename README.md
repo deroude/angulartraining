@@ -264,9 +264,14 @@ Square `[]` or round `()` parantheses represent a concept called 'binding'.
 - `[property]='var'` means the value of `property` will be updated in the template as soon as the class attribute `var` changes in the controller.
     - some `properties` are innate to the html elements, such as `attr` and `class`; Angular allows the developer to bind boolean values to html element attributes and classes, with the semantic: _'this element has or doesn't have this attribute (or class) depending on the value of `var`'_
 - `(some_event)='callback($event)` means that when `some_event` is activated by the user in the template, it needs to trigger the method `callback(event:any)` in the controller, passing the browser event as the argument `event`. While that is a common usage, the binding can also trigger an immediate, inline action, such as is the case in the above template.
-- `{{var}}` is a simple printing of the class attribute `var`, which will be update when the attribute changes in the controller.
+- `{{var}}` is a simple printing of the class attribute `var`, which will be updated when the attribute changes in the controller.
 
-So, for this template to work, we should add the `isCollapsed` class attribute 
+So, for this template to work, we should add the `isCollapsed` class attribute:
+
+```typescript
+isCollapsed:boolean=true;
+```
+> Collapsed or not doesn't really matter when the page is loaded in a wide window, such as your laptop full screen. It will become active only the page is loaded on a narrow screen, such as a mobile phone, or a smaller window. We want the menu items to start off as collapsed in that case, hence the initialization value `true`.
 
 Let's start with the _login_ component.
 
