@@ -82,7 +82,6 @@ What this does:
 
 ---?code=src/app/components/login/login.component.html&lang=html&title=login.component.html
 
-@[1](Form)
 @[2-7](Input group)
 @[3-5](Font awesome additions)
 
@@ -103,3 +102,48 @@ What this does:
 
 @[23](Router outlet)
 @[9-17](Router links)
+
+---
+
+## Authentication requirement
+
+### When a login is requested
+
+- It should be able to obtain authentication tokens, based on the credentials _we_ used in the REST client
+- It should store the authentication token, because it will be used in _every_ request
+- It should observe the authentication token expiry
+- It should notify an authentication success or error
+
+---
+
+## Authentication requirement (cont'd)
+
+### When a logout is requested
+
+- It should clear the tokens stored
+- It should notify the application that there is no longer an authorized user
+
+---
+
+## Authentication requirement (cont'd)
+
+### When a regular request is made for a resource requiring an authenticated user
+
+- It should verify that an authentication token is stored
+- If an authentication token is not present, but a refresh token is present, a new authentication token should be requested based on the refresh token
+- If neither an authentication token, nor a refresh token are stored, the request should be rejected
+
+---?code=src/app/services/auth.service.ts&lang=typescript&title=auth.service.ts
+
+@[18-20](constructor)
+@[73-84](Cookie handling)
+@[22-33](login)
+@[69-71](Error handler)
+@[35-49](refresh)
+@[51-55](logout)
+@[57-67](Check credentials)
+
+---?code=src/app/components/login/login.component.html&lang=html&title=login.component.html
+
+@[1](form element)
+@[6,12](ngModel)
