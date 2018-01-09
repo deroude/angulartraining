@@ -41,3 +41,39 @@ Yup, that simple. Now point your browser to `http//localhost:4200`.
 @[8](Viewport)
 @[9](Favicon)
 @[12](App root)
+
+---?code=src/app/app.module.ts&lang=typescript&title=app.module.ts
+
+@[1-16](Imports)
+@[19-25](Declarations)
+@[27-32](Imports)
+@[34](Providers)
+@[35](Bootstrap)
+
+---?code=src/app/app.component.ts&lang=typescript&title=app.component.ts
+
+@[4](Selector)
+@[5](Template)
+@[6](Style)
+
+---?code=src/app/app.component.html&lang=html&title=app.component.html
+
+@[1-21](Navbar)
+@[7-20](Collapsible)
+@[19](Login)
+@[22](Content)
+
+## Create the login form
+
+```
+ng g c login
+```
+
+What this does:
+
+- create folder
+- create `login.component.ts`
+- create `login.component.html`
+- create `login.component.scss`
+- create `login.component.spec.ts`
+- add component to `app.module.ts`
