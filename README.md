@@ -1080,6 +1080,8 @@ We've got it! Now let's see it in a nice table. Switch over to `user-list.compon
 </table>
 ```
 
+The most interesting new notion in this listing is another Angular built in directive, `*ngFor`. With the earlier `*ngIf`, this probably makes up a good 90% of all the templating tools you will ever need in Angular. Just kidding.
+
 > Can this be made more dynamic, like generate columns automatically based on domain metadata? Yeah. 
 
 Great, we have the 'R'. 
