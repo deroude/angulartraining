@@ -1162,6 +1162,8 @@ Then, we need to inject Angular's `FormBuilder` in the constructor and define th
   }
 ```
 
+Note that our form object is actually a `FormGroup`, which we will pass to the template form.
+
 Then, in the template, the form looks like this:
 
 ```html
@@ -1210,6 +1212,12 @@ Then, in the template, the form looks like this:
   </div>
 </form>
 ```
+
+> `[formGroup]` and `class='form-group'` have nothing in common. Just a name coincidence.
+
+The thing that makes the `FormGroup` identify its fields in the template is `formControlName`.
+
+And the thing that makes reactive forms remarkable is that one can generate forms from metadata, in the same manner that one can generate a table from metadata.
 
 We have two methods yet to implement: `onSubmit(form)`
 

@@ -176,3 +176,49 @@ What this does:
 @[47-59](delete)
 @[61-73](update)
 @[75-89](create)
+
+---
+
+## CRUD
+
+- Table
+- Pagination
+- Sort
+- Filter / Search
+- Delete selected
+- Modal editor for New / Selected
+
+---?code=src/app/components/user-list/user-list.component.ts&lang=typescript&title=user-list.component.ts
+
+@[18](Constructor)
+@[20-25](Members)
+@[27](Communication with Editor)
+@[29-35](OnInit)
+@[38-45](Load from REST)
+@[47-55](Sort)
+@[67-70](Create)
+@[57-61](Update)
+@[63-65](Delete)
+
+---?code=src/app/components/user-list/user-list.component.html&lang=html&title=user-list.component.html
+
+@[1-8](Control bar)
+@[2-3](Pagination)
+@[4-5](Search)
+@[6](Delete)
+@[7](New)
+@[10-21](Header)
+@[13,15,17,19](Font Awesome sort icons logic)
+@[22-29](Table body)
+
+---?code=src/app/components/user-editor/user-editor.component.ts&lang=typescript&title=user-editor.component.ts
+
+@[14-15](Constructor)
+@[17-21](Inputs)
+@[31-39](Form creation)
+@[40-56](Form submit)
+@[58-61](Visual field validation)
+
+---?code=src/app/components/user-list/user-list.component.html&lang=html&title=user-list.component.html
+
+@[11-15] (Visual field validation feedback)
