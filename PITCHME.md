@@ -44,11 +44,12 @@ Yup, that simple. Now point your browser to `http//localhost:4200`.
 
 ---?code=src/app/app.module.ts&lang=typescript&title=app.module.ts
 
-@[1-16](Imports)
-@[19-25](Declarations)
-@[27-32](Imports)
-@[34](Providers)
-@[35](Bootstrap)
+@[1-17](Imports)
+@[20-28](Declarations)
+@[29-36](Imports)
+@[37](Providers)
+@[38](Bootstrap)
+@[39](Entry components)
 
 ---?code=src/app/app.component.ts&lang=typescript&title=app.component.ts
 
@@ -153,7 +154,7 @@ What this does:
 ## REST
 
 - `GET /gidgets` = 'I want a list of gidgets'
-- `GET /gidgets/11` = 'I want gidget with ID 12'
+- `GET /gidgets/11` = 'I want gidget with ID 11'
 - `POST /gidgets [...]` = 'Create a new gidget'
 - `PUT /gidgets/11 [...]` = 'Update gidget 11'
 - `DELETE /gidget/11` = 'Delete gidget 11'
@@ -221,4 +222,4 @@ What this does:
 
 ---?code=src/app/components/user-list/user-list.component.html&lang=html&title=user-list.component.html
 
-@[11-15] (Visual field validation feedback)
+@[12-15] (Visual field validation feedback)
