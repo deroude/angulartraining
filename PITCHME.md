@@ -29,15 +29,15 @@ ng serve
 
 Yup, that simple. Now point your browser to `http//localhost:4200`.
 
----
-
 ---?code=package.json&lang=json&title=package.json
 
 @[14-30](Build dependencies)
 @[32-51](Dev dependencies)
 
----
-
 ---?code=src/index.html&lang=html&title=index.html
 
----
+@[5](Title)
+@[6](Base)
+@[8](Viewport)
+@[9](Favicon)
+@[12](App root)
