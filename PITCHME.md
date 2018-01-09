@@ -105,7 +105,7 @@ What this does:
 
 ---
 
-## Authentication requirement
+## Authentication
 
 ### When a login is requested
 
@@ -116,7 +116,7 @@ What this does:
 
 ---
 
-## Authentication requirement (cont'd)
+## Authentication (cont'd)
 
 ### When a logout is requested
 
@@ -125,9 +125,9 @@ What this does:
 
 ---
 
-## Authentication requirement (cont'd)
+## Authentication (cont'd)
 
-### When a regular request is made for a resource requiring an authenticated user
+### When a regular request is made
 
 - It should verify that an authentication token is stored
 - If an authentication token is not present, but a refresh token is present, a new authentication token should be requested based on the refresh token
