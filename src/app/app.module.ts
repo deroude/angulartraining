@@ -12,8 +12,9 @@ import { UserListComponent } from './components/user-list/user-list.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthService } from './services/auth.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RestService } from './services/rest.service';
+import { UserEditorComponent } from './components/user-editor/user-editor.component';
 
 @NgModule({
   declarations: [
@@ -22,16 +23,19 @@ import { RestService } from './services/rest.service';
     HomeComponent,
     ArticleListComponent,
     UserListComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    UserEditorComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     NgbModule.forRoot()
   ],
   providers: [CookieService,AuthService,RestService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents:[UserEditorComponent]
 })
 export class AppModule { }

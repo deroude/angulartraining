@@ -147,3 +147,32 @@ What this does:
 
 @[1](form element)
 @[6,12](ngModel)
+
+---
+
+## REST
+
+- `GET /gidgets` = 'I want a list of gidgets'
+- `GET /gidgets/11` = 'I want gidget with ID 12'
+- `POST /gidgets [...]` = 'Create a new gidget'
+- `PUT /gidgets/11 [...]` = 'Update gidget 11'
+- `DELETE /gidget/11` = 'Delete gidget 11'
+
+---
+
+## REST (cont'd)
+
+- `HTTP 2xx` = OK(-ish)
+- `HTTP 400` = Bad request
+- `HTTP 401` = Not authorized
+- `HTTP 404` = Not found
+- `HTTP 500` = Server error
+
+---?code=src/app/services/rest.service.ts&lang=typescript&title=rest.service.ts
+
+@[13](constructor)
+@[15-31](getList)
+@[33-45](getOne)
+@[47-59](delete)
+@[61-73](update)
+@[75-89](create)

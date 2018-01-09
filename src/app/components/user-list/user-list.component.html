@@ -1,3 +1,30 @@
-<p>
-  user-list works!
-</p>
+<nav class="form-inline">
+  <ngb-pagination size="sm" class="align-middle mr-2" [collectionSize]="userList?.totalElements" [(page)]="page" [pageSize]="userList?.size"
+    (pageChange)="load()"></ngb-pagination>
+  <input class="form-control form-control-sm align-middle mb-3" type="search" placeholder="Search" [(ngModel)]="searchTerm"
+    (keyup)="load()" />
+  <button class="btn btn-danger btn-sm ml-2 mb-3" [disabled]="selectedId===undefined" (click)="deleteSelected()">Delete</button>
+  <button class="btn btn-success btn-sm ml-2 mb-3" (click)="createNew()">New</button>
+</nav>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col" (click)="sort('username')">
+        <i *ngIf="sortCol==='username'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Username</th>
+      <th scope="col" (click)="sort('name')">
+        <i *ngIf="sortCol==='name'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Full name</th>
+      <th scope="col" (click)="sort('status')">
+        <i *ngIf="sortCol==='status'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Status</th>
+      <th scope="col" (click)="sort('role')">
+        <i *ngIf="sortCol==='role'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of userList?.content" [class.table-active]="u.id===selectedId" (click)="selectedId=u.id" (dblclick)="edit(u)">
+      <td>{{u.username}}</td>
+      <td>{{u.name}}</td>
+      <td>{{u.status}}</td>
+      <td>{{u.role}}</td>
+    </tr>
+  </tbody>
+</table>

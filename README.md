@@ -995,3 +995,292 @@ We also need to add a text element to the `login.component.html` to see the resu
 ## CRUD
 
 Naturally, CRUD begins with an 'R'. First, we read -- that means we display the items of a collection in a table, with a possibility to sort, navigate through pages, and filter.
+
+We'll build the `user-list.component` and let you handle the `article-list.component` by example.
+
+First, we need to inject our REST service into the `user-list.component.ts`:
+
+```typescript
+constructor(private _rest: RestService) { }
+```
+
+The functionalities we want for our table are:
+
+- load the table when the page loads, on page 0
+- sort (server side) by clicking on a column header
+- search (server side) with a single search field
+- display a page navigator to load an arbitrary page
+
+Since most of the operations will reload the table, we'll put that functionality in a separate method.
+
+We will have class members for each parameter listed (sort, page, search).
+
+```typescript
+userList: Resource<User>;
+page: number = 0;
+searchTerm: string = "";
+sortCol: string = "name";
+sortDir: boolean = true;
+selectedId: number;
+
+  ngOnInit() {
+    this.load();
+  }
+
+  private load() {
+    var query: { [k: string]: any } = {};
+    query.size = PAGE_SIZE;
+    query.search = this.searchTerm;
+    query.page = this.page - 1;
+    query.sort = this.sortCol + "," + (this.sortDir ? "asc" : "desc");
+    this._rest.getList<User>("api/user", query).subscribe(re => this.userList = re);
+  }
+
+  sort(col: string): void {
+    if (this.sortCol === col) {
+      this.sortDir = !this.sortDir;
+    } else {
+      this.sortCol = col;
+      this.sortDir = true;
+    }
+    this.load()
+  }
+```
+
+We've got it! Now let's see it in a nice table. Switch over to `user-list.component.html` and add the table:
+
+```html
+<nav class="form-inline">
+  <ngb-pagination size="sm" class="align-middle mr-2" [collectionSize]="userList?.totalElements" [(page)]="page" [pageSize]="userList?.size"
+    (pageChange)="load()"></ngb-pagination>
+  <input class="form-control form-control-sm align-middle mb-3" type="search" placeholder="Search" [(ngModel)]="searchTerm"
+    (keyup)="load()" />
+</nav>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col" (click)="sort('username')">
+        <i *ngIf="sortCol==='username'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Username</th>
+      <th scope="col" (click)="sort('name')">
+        <i *ngIf="sortCol==='name'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Full name</th>
+      <th scope="col" (click)="sort('status')">
+        <i *ngIf="sortCol==='status'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Status</th>
+      <th scope="col" (click)="sort('role')">
+        <i *ngIf="sortCol==='role'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of userList?.content" [class.table-active]="u.id===selectedId" (click)="selectedId=u.id">
+      <td>{{u.username}}</td>
+      <td>{{u.name}}</td>
+      <td>{{u.status}}</td>
+      <td>{{u.role}}</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+> Can this be made more dynamic, like generate columns automatically based on domain metadata? Yeah. 
+
+Great, we have the 'R'. 
+
+Let's add the 'D', because it's simpler.
+
+Just add this to the controller:
+
+```typescript
+  deleteSelected(): void {
+    this._rest.delete("api/user/" + this.selectedId).subscribe(re => this.load());
+  }
+```
+
+and this to the template:
+
+```html
+<button class="btn btn-danger btn-sm ml-2 mb-3" [disabled]="selectedId===undefined" (click)="deleteSelected()">Delete</button>
+```
+
+Note that we want the button to be disabled if there is no `selectedId`. 
+
+For the 'C' and the 'U', we need to create another component, the editor.
+
+You know the drill:
+
+```
+ng g c user-editor
+```
+
+This one is a bit special, because we need it to be popped up dynamically by NgBootstrap. To that end, we need to add it in `app.module.ts` not only in the `declarations` section, but also in a new section, called `entryComponents`.
+
+We also need to find a way to communicate between the editor and the list component. The `BehaviorSubject` worked before, so let's stick to familiar things: we define it in `user-list.component.ts`:
+
+```typescript
+changes: BehaviorSubject<User> = new BehaviorSubject<User>(null);
+```
+
+and also in `user-editor.component.ts`:
+
+```typescript
+@Input()
+callback: BehaviorSubject<User>;
+```
+
+Wait, what? `@Input`? The editor is going to be a child of the List. As such, it's going to receive the information from the parent. It depends on that information, but yet it cannot be a part of the constructor (ask me why). We talked about binding before, when we were setting attributes on various elements by using `[]`. `@Input` is basically telling Angular 'this is a binding point'. So, much like a button has a binding point on `disabled`, our editor has a binding point on `callback`.
+
+we also need a binding point on the domain object being edited:
+
+```typescript
+@Input()
+user: User;
+```
+
+We already used a kind of form: the Login form. That was probably the most straightforward option, it's also called a [Template driven form](https://angular.io/guide/forms). There's also another kind, that we will use here: the [Reactive forms](https://angular.io/guide/reactive-forms).
+
+To begin with, we need to add `ReactiveFormsModule` to the `app.module.ts` `imports` section.
+
+Then, we need to inject Angular's `FormBuilder` in the constructor and define the form programmatically, in the controller:
+
+```typescript
+
+  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder,
+    private rest: RestService) { }
+
+  form: FormGroup;
+
+  ngOnInit() {
+    this.createForm();
+  }
+
+  createForm() {
+    console.log(this.user);
+    this.form = this.fb.group({
+      name: this.fb.control(this.user.name, Validators.required),
+      username: this.fb.control(this.user.username, Validators.required),
+      status: this.fb.control(this.user.status),
+      role: this.fb.control(this.user.role)
+    });
+  }
+```
+
+Then, in the template, the form looks like this:
+
+```html
+<form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
+  <div class="modal-header">
+    <h4 class="modal-title">Editing: {{user.username}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" formControlName="username" class="form-control" [class.is-invalid]="invalid('username')" id="username"
+        name="username" placeholder="Username">
+      <div class="invalid-feedback">
+        Invalid
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" formControlName="name" class="form-control" [class.is-invalid]="invalid('name')" id="name" name="name"
+        placeholder="Name">
+      <div class="invalid-feedback">
+        Invalid
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select class="form-control" formControlName="status" id="status" name="status">
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select class="form-control" formControlName="role" id="role" name="role">
+        <option value="admin">Admin</option>
+        <option value="editor">Editor</option>
+      </select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close()">Close</button>
+  </div>
+</form>
+```
+
+We have two methods yet to implement: `onSubmit(form)`
+
+```typescript
+onSubmit({ value, valid }: { value: User, valid: boolean }) {
+    this.submitted = true;
+    if (valid) {
+      if (this.user.id) {
+        this.rest.update("api/user/" + this.user.id, value)
+          .subscribe(re => {
+            this.activeModal.close();
+            this.callback.next(re);
+          });
+      } else {
+        this.rest.create("api/user", value).subscribe(re => {
+          this.activeModal.close();
+          this.callback.next(re);
+        });
+      }
+    }
+  }
+```
+
+Check out the signature: this is what the form object presents to us on the submit event.
+
+This is the same for Create and Update. If the `User` passed on to the editor has no `id`, that means it's new. Otherwise, it exists and we want to update it.
+
+When the REST operation returns, we want the modal to close. We also want to notify the list component that something has changed, so it needs to reload.
+
+Last but not least, the `invalid(field)`.
+
+```typescript
+invalid(field: string): boolean {
+    var f = this.form.get(field);
+    return f.invalid && (f.dirty || f.touched || this.submitted);
+  }
+```
+
+That's a lot of boolean operations. The semantic is as follows: a field is not invalid if I never touched it and I did not attempt to submit the form. For example, a form with a new User will have a lot of empty fields. I don't want them to be marked as invalid immediately when the form pops.
+
+We mentioned earlier that the `user-list.component.ts` finds out about the changes through the `BehaviorSubject`. Well, not yet, it doesn't. We need to add this functionality in its `ngOnInit` method:
+
+```typescript
+this.changes.subscribe(u => {
+      if (u !== null) {
+        this.load();
+      }
+    });
+```
+
+We also need the functionality that pops the form in the first place. First, we inject `private _modalSv: NgbModal` into the constructor. Then we can use it on the respective methods:
+
+```typescript
+edit(u: User): void {
+    const modalRef = this._modalSv.open(UserEditorComponent);
+    modalRef.componentInstance.user = u;
+    modalRef.componentInstance.callback = this.changes;
+  }
+
+createNew(): void {
+    let u: User = new User();
+    this.edit(u);
+  }
+```
+
+Finally, we add a button to call the `createNew()` method in the template:
+
+```html
+<button class="btn btn-success btn-sm ml-2 mb-3" (click)="createNew()">New</button>
+```
+
+and a handler for the double click on the `<tr>`: `(dblclick)='edit(u)'`.
+
+That's it. We have a working CRUD!
