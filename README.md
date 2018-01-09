@@ -738,3 +738,6 @@ Note that for now we are not doing anything with the token received when we logi
 Next, bind these two actions to the template elements, i.e. add `(ngSubmit)='login()` to the `form` element and `(click)='logout()'` to the logout button.
 
 Note that if you login, then refresh the page, the logged in state persists, because the auth token is stored in the `auth` cookie.
+
+### REST client
+
