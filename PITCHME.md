@@ -79,3 +79,27 @@ What this does:
 - create `login.component.scss`
 - create `login.component.spec.ts`
 - add component to `app.module.ts`
+
+---?code=src/app/components/login/login.component.html&lang=html&title=login.component.html
+
+@[1](Form)
+@[2-7](Input group)
+@[3-5](Font awesome additions)
+
+---
+
+## Routing
+
+- Content components
+- Routing module
+- Router outlet
+- Router link
+
+---?code=src/app/app-routing.module.ts&lang=typescript&title=app-routing.module.ts
+
+@[8-13](The routes)
+
+---?code=src/app/app.component.html&lang=html&title=app.component.html
+
+@[23](Router outlet)
+@[9-17](Router links)
