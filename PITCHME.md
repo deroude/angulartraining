@@ -1,18 +1,32 @@
-# White
+# Angular 5 Startup
 
-### A GitPitch Presentation Template
+### Presented for MindIT
+
+---
+
+## Goals
+
+- Construct an Angular 5 application, accomplishing the following tasks:
+    - Navigate between views
+    - Perform CRUD operations
+    - Consume a REST service
+    - Authenticate using an OAuth 2 service
+- Become familiar with Web technologies:
+    - Typescript & Rx
+    - HTML 5
+    - Bootstrap 4 visual elements
+    - CSS / SASS
 
 ---
 
-## Tips!
+## Start
 
-<br>
+```
+ng new AngularTraining --style=scss` 
 
-@fa[arrows gp-tip](Press F to go Fullscreen)
+ng serve
+```
 
-@fa[microphone gp-tip](Press S for Speaker Notes)
-
----
 
 ## Template Features
 
@@ -23,7 +37,9 @@
 - Slide-specific Background Images |
 - Custom Logo, TOC, and Footnotes |
 
----?code=src/go/server.go&lang=golang&title=Golang File
+---
+
+?code=src/go/server.go&lang=golang&title=Golang File
 
 @[1,3-6](Present code found within any repo source file.)
 @[8-18](Without ever leaving your slideshow.)

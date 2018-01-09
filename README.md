@@ -530,7 +530,6 @@ We will also need the `Observable` as well, because the `HttpClient` uses it. Be
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
@@ -729,6 +728,7 @@ login(): void {
     }
 
 logout(): void {
+        this.user=new User();
         this.authSvc.logout();
     }
 ```
@@ -741,3 +741,257 @@ Note that if you login, then refresh the page, the logged in state persists, bec
 
 ### REST client
 
+Now that we are authenticated, we can make requests to the private section of the REST service. A civilized REST service will abide by some rules, or [best practices](https://hackernoon.com/restful-api-designing-guidelines-the-best-practices-60e1d954e7c9). 
+
+According to these, the generic operations for any resource should be:
+
+- GET returns a collection of that resource, filtered, sorted and paged; the common practice, unless there's a specific requirement, is to filter using a search term (e.g. for our `User` model, we can apply the search term to the username, full name, or role)
+- POST creates a new instance of the resource, using the serialized json object in the body
+- PUT updates an instance of the resource specified by the id in the path, using the serialized json object in the body
+- DELETE -- well, you get the point.
+
+We mentioned a magic word: 'generic'. Typescript has that, and we are going to use this feature for a generic REST client.
+
+First, let's create a new service: `cd` into `src/app/services` and 
+
+```
+ng g s rest
+```
+
+Then add it to the `providers` section of your `app.module.ts`.
+
+Our service depends on `HttpClient`, so we should include it in the `constructor`.
+
+Since most of our calls will require authentication, we should include our `AuthService`.
+
+Also, we will make use of the `environment` once again, for the root API URL -- so import it as well.
+
+As before, we will need the `Observable` imports, including some operators:
+
+```typescript
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/map';
+```
+
+Now, let's take a look at the response we got from the REST service, on a GET request to `http://localhost:7799/public/articles`:
+
+```json
+{
+    "content": [
+        {
+            "id": 3,
+            "title": "Lipshit",
+            "text": "Why cheap lipstick is bullshit.",
+            "publishDate": 1515488491000,
+            "articleType": "FRONT_PAGE",
+            "author": {
+                "id": 3,
+                "username": "Meg",
+                "name": "Meg Griffin(dor)",
+                "role": "editor",
+                "status": "active"
+            }
+        },
+        {
+            "id": 4,
+            "title": "Icecream pancakes",
+            "text": "Borrow 3 eggs from Cleveland...",
+            "publishDate": 1515488491000,
+            "articleType": "FRONT_PAGE",
+            "author": {
+                "id": 2,
+                "username": "Lois",
+                "name": "Lois Lan... (sorry) Griffin",
+                "role": "editor",
+                "status": "active"
+            }
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "sorted": false,
+            "unsorted": true
+        },
+        "pageSize": 10,
+        "pageNumber": 0,
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "totalPages": 1,
+    "totalElements": 2,
+    "last": true,
+    "sort": {
+        "sorted": false,
+        "unsorted": true
+    },
+    "first": true,
+    "numberOfElements": 2,
+    "size": 10,
+    "number": 0
+}
+```
+
+This is a collection response, with details about sorting and pagination. For us, it's a data model, that we need to have in our own domain. 
+
+Namely, a `sort.ts` class:
+
+```typescript
+export class Sort{
+    sorted: boolean;
+    unsorted: boolean;
+}
+```
+
+a `pageable.ts` class:
+
+```typescript
+export class Pageable {
+    sort: Sort;
+    offset: number;
+    pageNumber: number;
+    pageSize: number;
+    paged: boolean;
+    unpaged: boolean;
+}
+```
+
+and a `resource.ts` wrapper:
+
+```typescript
+export class Resource<T>{
+    content: T[];
+    pageable: Pageable;
+    totalElements: number;
+    totalPages: number;
+    last: boolean;
+    size: number;
+    number: number;
+    sort: Sort;
+    numberOfElements: number;
+    first: boolean;
+}
+```
+
+Note that the resource is generic: it contains the same attributes for any type of resource, except for `content`, which is an array of the type given as argument.
+
+With these done, let's return to our REST client and build the GET method:
+
+```typescript
+public getList<T>(path: string, query?: { [key: string]: any }, authenticate: boolean = true): Observable<Resource<T>> {
+        let params: HttpParams = new HttpParams();
+        for (var k in query) {
+            params = params.append(k, "" + query[k]);
+        }
+        if (authenticate) {
+            return this._auth.checkCredentials().switchMap(tk => {
+                if (tk !== null) {
+                    let headers = new HttpHeaders()
+                        .set('Authorization', 'Bearer ' + tk)
+                    return this._http.get<Resource<T>>(environment.rootPath + path, { params: params, headers: headers });
+                }
+            });
+        } else {
+            return this._http.get<Resource<T>>(environment.rootPath + path, { params: params });
+        }
+    }
+```
+
+A walk through that code:
+
+- The signature:
+    - we need the path of the resource (like `/articles`)
+    - we also need the query parameters (if any), such as page, sort, search, other filters
+    - finally, we need to know if the request requires authentication
+    - we return an `Observable`, because the http call is asynchronous
+    - the method is generic, its type parameter is the type we expect our response to contain
+- We translate our query parameters, given in the shape of an associative array, to Angular's `HttpParams`
+- We derive and return an `Observable` from the `checkCredentials()` method in the Auth service
+    - the semantic is: obtain the credentials, THEN make an http request using the retrieved token
+
+Let's add the same for the rest of the CRUD operations:
+
+```typescript
+    public getOne<T>(path: string, authenticate: boolean = true): Observable<T> {
+        if (authenticate) {
+            return this._auth.checkCredentials().switchMap(tk => {
+                if (tk !== null) {
+                    let headers = new HttpHeaders()
+                        .set('Authorization', 'Bearer ' + tk)
+                    return this._http.get<T>(environment.rootPath + path, { headers: headers });
+                }
+            });
+        } else {
+            return this._http.get<T>(environment.rootPath + path, {});
+        }
+    }
+
+    public delete(path: string, authenticate: boolean = true): Observable<boolean> {
+        if (authenticate) {
+            return this._auth.checkCredentials().switchMap(tk => {
+                if (tk !== null) {
+                    let headers = new HttpHeaders()
+                        .set('Authorization', 'Bearer ' + tk)
+                    return this._http.delete(environment.rootPath + path, { headers: headers }).map(a => true).catch(e => Observable.of(false));
+                }
+            });
+        } else {
+            return this._http.delete(environment.rootPath + path).map(a => true).catch(e => Observable.of(false));
+        }
+    }
+
+    public update<T>(path: string, entity: T, authenticate: boolean = true): Observable<T> {
+        if (authenticate) {
+            return this._auth.checkCredentials().switchMap(tk => {
+                if (tk !== null) {
+                    let headers = new HttpHeaders()
+                        .set('Authorization', 'Bearer ' + tk)
+                    return this._http.put<T>(environment.rootPath + path, entity, { headers: headers });
+                }
+            });
+        } else {
+            return this._http.put<T>(environment.rootPath + path, entity);
+        }
+    }
+
+    public create<T>(path: string, entity: T, authenticate: boolean = true): Observable<T> {
+        if (authenticate) {
+            return this._auth.checkCredentials().switchMap(tk => {
+                if (tk !== null) {
+                    let headers = new HttpHeaders()
+                        .set('Authorization', 'Bearer ' + tk)
+                    return this._http.post<T>(environment.rootPath + path, entity, { headers: headers });
+                }
+            });
+        } else {
+            return this._http.post<T>(environment.rootPath + path, entity);
+        }
+    }
+```
+
+#### Using the client
+
+Now, let's put our REST client to work. Remember that our Login component was not doing anything after a successful authentication. Let's code a welcome print.
+
+Don't forget, we need to inject the REST client in the constructor before we can use it.
+
+We already have a local variable holding a `User`. Let's use the REST client to populate it. We will query the REST service on the path `/api/user/me` which returns the currently authenticated user.
+
+```typescript
+this.authSvc.login(this.user.username, this.user.password)
+      .subscribe(token => this.rest.getOne<User>("api/user/me", true)
+        .subscribe(u => this.user = u));
+```
+
+We also need to add a text element to the `login.component.html` to see the results.
+
+```html
+<span *ngIf="user?.name" class="mr-2 mt-1 text-white">Authenticated as: {{user.name}}</span>
+```
+
+> We got the job done, but it's not an ideal solution. If we refresh the page, we are still logged in, but the message is not shown, because it is only shown on the `login` callback. Think of a better way ;)
+
+## CRUD
+
+Naturally, CRUD begins with an 'R'. First, we read -- that means we display the items of a collection in a table, with a possibility to sort, navigate through pages, and filter.

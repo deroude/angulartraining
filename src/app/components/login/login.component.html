@@ -13,4 +13,5 @@
   </div>
   <button type="submit" class="btn btn-light btn-sm">Login</button>
 </form>
+<span *ngIf="user?.name" class="mr-2 mt-1 text-white">Authenticated as: {{user.name}}</span>
 <button type="button" class="btn btn-light btn-sm" *ngIf="authSvc.authenticated|async" (click)='logout()'>Logout</button>

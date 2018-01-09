@@ -13,6 +13,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthService } from './services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { RestService } from './services/rest.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { FormsModule } from '@angular/forms';
     AppRoutingModule,
     NgbModule.forRoot()
   ],
-  providers: [CookieService,AuthService],
+  providers: [CookieService,AuthService,RestService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
