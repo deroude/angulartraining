@@ -6,7 +6,7 @@
 
 ## Goals
 
-- Construct an Angular 5 application, accomplishing the following tasks:
+- Construct an Angular 5 application:
     - Navigate between views
     - Perform CRUD operations
     - Consume a REST service
@@ -27,6 +27,9 @@ ng new AngularTraining --style=scss`
 ng serve
 ```
 
+Yup, that simple. Now point your browser to `http//localhost:4200`.
+
+---
 
 ## Template Features
 
