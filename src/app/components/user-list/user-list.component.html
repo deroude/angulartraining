@@ -9,20 +9,20 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      <th scope="col" (click)="sort('username')">
-        <i *ngIf="sortCol==='username'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Username</th>
-      <th scope="col" (click)="sort('name')">
-        <i *ngIf="sortCol==='name'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Full name</th>
-      <th scope="col" (click)="sort('status')">
-        <i *ngIf="sortCol==='status'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Status</th>
-      <th scope="col" (click)="sort('role')">
-        <i *ngIf="sortCol==='role'" class="fa" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Role</th>
+      <th scope="col" (click)="sort('username')" class="w-25">
+        <i *ngIf="sortCol==='username'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Username</th>
+      <th scope="col" (click)="sort('fullName')">
+        <i *ngIf="sortCol==='fullName'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Full name</th>
+      <th scope="col" (click)="sort('status')" class="w-10">
+        <i *ngIf="sortCol==='status'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Status</th>
+      <th scope="col" (click)="sort('role')" class="w-10">
+        <i *ngIf="sortCol==='role'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Role</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let u of userList?.content" [class.table-active]="u.id===selectedId" (click)="selectedId=u.id" (dblclick)="edit(u)">
       <td>{{u.username}}</td>
-      <td>{{u.name}}</td>
+      <td>{{u.fullName}}</td>
       <td>{{u.status}}</td>
       <td>{{u.role}}</td>
     </tr>

@@ -31,7 +31,7 @@ export class UserEditorComponent implements OnInit {
   createForm() {
     console.log(this.user);
     this.form = this.fb.group({
-      name: this.fb.control(this.user.name, Validators.required),
+      name: this.fb.control(this.user.fullName, Validators.required),
       username: this.fb.control(this.user.username, Validators.required),
       status: this.fb.control(this.user.status),
       role: this.fb.control(this.user.role)

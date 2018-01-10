@@ -20,7 +20,7 @@ export class UserListComponent implements OnInit {
   userList: Resource<User>;
   page: number = 0;
   searchTerm: string = "";
-  sortCol: string = "name";
+  sortCol: string = "fullName";
   sortDir: boolean = true;
   selectedId: number;
 
