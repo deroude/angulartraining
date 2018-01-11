@@ -15,6 +15,7 @@ import { AuthService } from './services/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RestService } from './services/rest.service';
 import { UserEditorComponent } from './components/user-editor/user-editor.component';
+import { ArticleEditorComponent } from './components/article-editor/article-editor.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { UserEditorComponent } from './components/user-editor/user-editor.compon
     ArticleListComponent,
     UserListComponent,
     NotFoundComponent,
-    UserEditorComponent
+    UserEditorComponent,
+    ArticleEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -34,8 +36,8 @@ import { UserEditorComponent } from './components/user-editor/user-editor.compon
     AppRoutingModule,
     NgbModule.forRoot()
   ],
-  providers: [CookieService,AuthService,RestService],
+  providers: [CookieService, AuthService, RestService],
   bootstrap: [AppComponent],
-  entryComponents:[UserEditorComponent]
+  entryComponents: [UserEditorComponent, ArticleEditorComponent]
 })
 export class AppModule { }

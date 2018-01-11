@@ -1,3 +1,30 @@
-<p>
-  article-list works!
-</p>
+<nav class="form-inline">
+  <ngb-pagination size="sm" class="align-middle mr-2" [collectionSize]="articleList?.totalElements" [(page)]="page" [pageSize]="articleList?.size"
+    (pageChange)="load()"></ngb-pagination>
+  <input class="form-control form-control-sm align-middle mb-3" type="search" placeholder="Search" [(ngModel)]="searchTerm"
+    (keyup)="load()" />
+  <button class="btn btn-danger btn-sm ml-2 mb-3" [disabled]="selectedId===undefined" (click)="deleteSelected()">Delete</button>
+  <button class="btn btn-success btn-sm ml-2 mb-3" (click)="createNew()">New</button>
+</nav>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col" (click)="sort('author.fullName')" class="w-25">
+        <i *ngIf="sortCol==='author.fullName'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Author</th>
+      <th scope="col" (click)="sort('title')">
+        <i *ngIf="sortCol==='title'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Title</th>
+      <th scope="col" (click)="sort('articleType')" class="w-10">
+        <i *ngIf="sortCol==='articleType'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Destination</th>
+      <th scope="col" (click)="sort('publishDate')" class="w-10">
+        <i *ngIf="sortCol==='publishDate'" class="fa mr-2" [class.fa-sort-asc]="sortDir" [class.fa-sort-desc]="!sortDir"></i>Publish date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of articleList?.content" [class.table-active]="u.id===selectedId" (click)="selectedId=u.id" (dblclick)="edit(u)">
+      <td>{{u.author.fullName}}</td>
+      <td>{{u.title}}</td>
+      <td>{{u.articleType}}</td>
+      <td>{{u.publishDate}}</td>
+    </tr>
+  </tbody>
+</table>
