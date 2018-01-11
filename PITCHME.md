@@ -228,7 +228,7 @@ What this does:
 ---
 ## Challenge 1:
 
-- Routing can make use of a `CanLoad` and a `CanActivate` interface implementation to choose whether or not a user can navigate to a certain page/component. Use this to restrict navigation to `Users` and `Articles` only for logged in users.
+- Routing can make use of a `CanLoad` and a [`CanActivate`](https://angular.io/api/router/CanActivate) interface implementation to choose whether or not a user can navigate to a certain page/component. Use this to restrict navigation to `Users` and `Articles` only for logged in users.
 - Do not show the links in the menu for anonymous users.
 
 ---
