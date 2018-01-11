@@ -264,3 +264,11 @@ Translation challenge:
 - Build a service that retrieves key value pairs
 - Build a component that switches languages
 - Build a [pipe](https://angular.io/guide/pipes) that uses the service to translate items on page
+
+---
+## Challenge 6:
+
+Use [ngx-charts](https://github.com/swimlane/ngx-charts) to build the following charts:
+- Articles / user (bar)
+- Active / Inactive users (pie)
+- Admin / Regular users (pie)
