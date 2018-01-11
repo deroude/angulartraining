@@ -220,6 +220,47 @@ What this does:
 @[40-56](Form submit)
 @[58-61](Visual field validation)
 
----?code=src/app/components/user-list/user-list.component.html&lang=html&title=user-list.component.html
+---?code=src/app/components/user-editor/user-editor.component.html&lang=html&title=user-editor.component.html
 
-@[12-15] (Visual field validation feedback)
+@[1] (Form binding)
+@[11,19](Control reconciliation)
+
+---
+## Challenge 1:
+
+- Routing can make use of a `CanLoad` and a `CanActivate` interface implementation to choose whether or not a user can navigate to a certain page/component. Use this to restrict navigation to `Users` and `Articles` only for logged in users.
+- Do not show the links in the menu for anonymous users.
+
+---
+## Challenge 2:
+
+Build a CRUD for the `Articles` section.
+
+---
+## Challenge 3:
+
+Build a 'blog' on the `Home` page.
+
+An anonymous user should see only articles returned under `/public/articles` path of the REST API, while a logged in user should see all the articles.
+
+Order by date descending.
+
+---
+## Challenge 4:
+
+```typescript
+Dumi.present.subscribe(is=>{
+    if(is){
+        challenges.next("Build Dumi's component");
+    }
+});
+```
+
+---
+## Challenge 5:
+
+Translation challenge: 
+
+- Build a service that retrieves key value pairs
+- Build a component that switches languages
+- Build a [pipe](https://angular.io/guide/pipes) that uses the service to translate items on page
