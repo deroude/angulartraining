@@ -9,14 +9,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from './../../environments/environment';
 import { AuthToken } from '../domain/auth.token';
+import { CanActivate, CanLoad, Route, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements CanActivate, CanLoad {
 
   public authenticated: BehaviorSubject<boolean> = new BehaviorSubject(this._cookie.check("auth"));
 
   constructor(
-    private _http: HttpClient, private _cookie: CookieService) {
+    private _http: HttpClient, private _cookie: CookieService, private _router: Router) {
   }
 
   public login(username: string, password: string): Observable<string> {
@@ -52,19 +53,20 @@ export class AuthService {
     this._cookie.delete("auth");
     this._cookie.delete("refresh");
     this.authenticated.next(false);
+    this._router.navigate(['/']);
   }
 
   public checkCredentials(): Observable<string> {
     if (this.getAuth()) {
-        return Observable.of(this.getAuth());
+      return Observable.of(this.getAuth());
     } else {
-        if (this.getRefresh()) {
-            return this.refreshAccessToken();
-        } else {
-            return Observable.of(null);
-        }
+      if (this.getRefresh()) {
+        return this.refreshAccessToken();
+      } else {
+        return Observable.of(null);
+      }
     }
-}
+  }
 
   private handleError(error: Response) {
     return Observable.throw(error.json()['error'] || 'Login error');
@@ -81,6 +83,28 @@ export class AuthService {
   private setAuth(a: AuthToken): void {
     this._cookie.set("auth", a.access_token, new Date(new Date().getTime() + a.expires_in * 1000));
     this._cookie.set("refresh", a.refresh_token);
+  }
+
+  canLoad(route: Route): boolean | Observable<boolean> | Promise<boolean> {
+      return this.checkCredentials().map(tk => {
+        if (tk === null) {
+          this._router.navigate(['/']);
+          return false;
+        } else {
+          return true;
+        }
+      });
+  }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
+    console.log(route);
+    return this.checkCredentials().map(tk => {
+      if (tk === null) {
+        this._router.navigate(['/']);
+        return false;
+      } else {
+        return true;
+      }
+    });
   }
 
 }

@@ -4,10 +4,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { UserListComponent } from './components/user-list/user-list.component';
+import { AuthService } from './services/auth.service';
 
 const appRoutes: Routes = [
-  { path: 'users', component: UserListComponent },
-  { path: 'articles', component: ArticleListComponent },
+  { path: 'users', component: UserListComponent,canActivate:[AuthService],canLoad:[AuthService] },
+  { path: 'articles', component: ArticleListComponent,canActivate:[AuthService],canLoad:[AuthService] },
   { path: '', component: HomeComponent },
   { path: '**', component: NotFoundComponent }
 ];
